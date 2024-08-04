@@ -21,13 +21,13 @@ public class PlayerBats : MonoBehaviour
     }
     private void Limit()
     {
-        if(transform.position.x < -1.72)
+        if(transform.position.x < -3f)
         {
-            transform.position = new Vector3(-1.72f, -4.89f, 0f);
+            transform.position = new Vector3(-3f, -4.89f, 0f);
         }
-        else if(transform.position.x > 1.72)
+        else if(transform.position.x > 3f)
         {
-            transform.position = new Vector3(1.72f, -4.89f, 0f);
+            transform.position = new Vector3(3f, -4.89f, 0f);
         }
     }
 }

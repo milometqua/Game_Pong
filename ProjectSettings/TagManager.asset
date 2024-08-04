@@ -7,8 +7,8 @@ TagManager:
   - ScoreEnermy
   - ScorePlayer
   - Ball
-  - BatsEnermy
   - BatsPlayer
+  - BatsEnemy
   layers:
   - Default
   - TransparentFX

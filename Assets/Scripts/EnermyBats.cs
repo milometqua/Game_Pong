@@ -1,12 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnermyBats : MonoBehaviour
 {
+    [SerializeField] private float speed;
+
     public GameObject ball;
 
-    // Update is called once per frame
+    private Vector2 playerMove;
+    private Rigidbody2D rb;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
     void Update()
     {
         Limit();
@@ -14,18 +23,24 @@ public class EnermyBats : MonoBehaviour
 
     private void Limit()
     {
-        float x = ball.transform.position.x;
-        if (x < -1.72)
+        transform.rotation = Quaternion.Euler(0, 0, 90);
+        float xBall = ball.transform.position.x;
+        float xEnemy = transform.position.x;
+        if (xBall > xEnemy + 0.5f)
         {
-            transform.position = new Vector3(-1.72f, 4.89f, 0f);
+            playerMove = new Vector2(1, 0);
         }
-        else if (x > 1.72)
+        else if (xBall < xEnemy - 0.5f)
         {
-            transform.position = new Vector3(1.72f, 4.89f, 0f);
+            playerMove = new Vector2(-1, 0);
         }
         else
         {
-            transform.position = new Vector3(x, 4.89f, 0f);
+            playerMove = new Vector2(0, 0);
         }
+    }
+    private void FixedUpdate()
+    {
+        rb.velocity = playerMove * speed;
     }
 }

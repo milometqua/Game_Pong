@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,91 +8,94 @@ public class Ball : MonoBehaviour
     private int scorePlayer;
     private int scoreEnermy;
     private Rigidbody2D rb;
+    private int hitCounter;
 
-    public Text _playerScore; // teen bien dat chua dung
-    public Text _enemyScore;
-    public GameObject _playerBats;
-    public GameObject _enemyBats;
+    [SerializeField] private float _intialSpeed;
+    [SerializeField] private float _speedIncrease;
+
+    public Text playerScore;
+    public Text enemyScore;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Start is called before the first frame update
     private void Start()
     {
         scorePlayer = 0;
         scoreEnermy = 0;
-        //_enemyBats = GameObject.Find("Up");
-        //_playerBats = GameObject.Find("Down");
-        StartCoroutine(Pause());
+        Invoke("StartBall", 2f);
     }
 
-    IEnumerator Pause()
+    private void FixedUpdate()
     {
-        int directionX = Random.Range(-2, 2);
-        int directionY = Random.Range(-2, 2);
+        rb.velocity = Vector2.ClampMagnitude(rb.velocity, _intialSpeed + (_speedIncrease * hitCounter));
+    }
 
-        if (directionX == 0)
+    private void StartBall()
+    {
+        rb.velocity = new Vector2(0, -1) * (_intialSpeed + _speedIncrease * hitCounter);
+    }
+
+    private void ResetBall()
+    {
+        rb.velocity = new Vector2(0, 0);
+        transform.position = new Vector2(0, 0);
+        hitCounter = 0;
+        Invoke("StartBall", 2f);
+    }
+
+    private void PlayerBounce(Transform myObject)
+    {
+        hitCounter++;
+
+        Vector2 ballPos = transform.position;
+        Vector2 playerPos = myObject.position;
+
+        float directionX, directionY;
+        if(transform.position.y > 0)
         {
-            directionX = 1;
+            directionY = -1;
         }
-        else if (directionY == 0)
+        else
         {
             directionY = 1;
         }
-        rb.velocity = new Vector2(0f, 0f);
-        yield return new WaitForSeconds(2);
-        rb.velocity = new Vector2(6f * directionX, 6f * directionY);
+        directionX = (ballPos.x - playerPos.x) / myObject.GetComponent<Collider2D>().bounds.size.x;
+        if(directionX == 0)
+        {
+            directionX = 0.25f;
+        }
+        rb.velocity = new Vector2(directionX, directionY) * (_intialSpeed + _speedIncrease * hitCounter);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("BatsPlayer"))
+        if(collision.gameObject.CompareTag("BatsEnemy") || collision.gameObject.CompareTag("BatsPlayer"))
         {
-            float playerPosX = _playerBats.transform.position.x;
-            if (playerPosX > 0.2f)
-            {
-                rb.velocity = new Vector2(-10f, 10f);
-            }
-            else if (playerPosX < -0.2f)
-            {
-                rb.velocity = new Vector2(10f, 10f);
-            }
-            else
-            {
-                rb.velocity = new Vector2(0f, 10f);
-            }
+            PlayerBounce(collision.transform);
         }
-        else if (collision.gameObject.CompareTag("BatsEnermy")) // sai chinh ta
-        {
-            if (_enemyBats.transform.position.x > 0.2f)
-            {
-                rb.velocity = new Vector2(-10f, -10f);
-            }
-            else if (_enemyBats.GetComponent<Rigidbody2D>().velocity.x < -0.2f)
-            {
-                rb.velocity = new Vector2(10f, -10f);
-            }
-            else
-            {
-                rb.velocity = new Vector2(0f, -10f);
-            }
-        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
         if (collision.gameObject.CompareTag("ScorePlayer"))
         {
             ++scoreEnermy;
-            _enemyScore.text = scoreEnermy.ToString();
+            enemyScore.text = scoreEnermy.ToString();
             this.transform.position = new Vector3(0f, 0f, 0f);
-            StartCoroutine(Pause());
+            ResetBall();
         }
-        else if(collision.gameObject.CompareTag("ScoreEnermy"))
+        else if (collision.gameObject.CompareTag("ScoreEnermy"))
         {
             ++scorePlayer;
-            _playerScore.text = scorePlayer.ToString();
+            playerScore.text = scorePlayer.ToString();
             this.transform.position = new Vector3(0f, 0f, 0f);
-            StartCoroutine(Pause());
+            ResetBall();
         }
+    }
+    void OnButtonClick()
+    {
+        Debug.Log("AAAAAAAAA");
     }
 }
