@@ -94,8 +94,4 @@ public class Ball : MonoBehaviour
             ResetBall();
         }
     }
-    void OnButtonClick()
-    {
-        Debug.Log("AAAAAAAAA");
-    }
 }

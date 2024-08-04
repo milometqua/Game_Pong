@@ -10,7 +10,6 @@ public class GameController : MonoBehaviour
     public static GameController instance;
     [SerializeField] private GameObject play;
     [SerializeField] private GameObject pause;
-    public Button button;
     private void Awake()
     {
         if (instance == null)
@@ -18,14 +17,6 @@ public class GameController : MonoBehaviour
             instance = this;
         }
         Time.timeScale = 1.0f;
-    }
-    private void Update()
-    {
-        button.onClick.AddListener(OnButtonClick);
-    }
-    void OnButtonClick()
-    {
-        Debug.Log("Clicked");
     }
     public void Pause()
     {
